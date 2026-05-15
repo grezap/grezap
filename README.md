@@ -34,22 +34,28 @@ complete project grid with live status.
 
 ## Currently building
 
-> **Phase 0 — Foundation**
-> Setting up the presentation layer, the first public repositories, and the portfolio
-> website shell. First flagship project (`nexus-cli`) is next.
+> **Phase 0 — Infrastructure foundation** *(in flight, ~60% complete)*
+> The 66-VM lab is half-built. Foundation tier (AD DS + HashiCorp Vault HA on Raft +
+> PKI + LDAPS + Transit auto-unseal), orchestration tier (Docker Swarm + HashiCorp
+> Nomad/Consul + Portainer CE, mTLS end-to-end), and the **Kafka ecosystem tier**
+> (two KRaft clusters on mutual TLS + Schema Registry + Connect + Debezium + ksqlDB +
+> MirrorMaker 2 cross-cluster DR) are all live and cold-rebuildable. The .NET 10
+> Native AOT operator CLI (`nexus-cli`) ships **4 of 5 master-plan verbs**.
+> Next: the remaining v0.5 CLI verb (`kafka failover`), then the application phases
+> (Vol01-Vol13 — `dataflow-studio` lights up first).
 
 ## Pinned projects
 
-Projects will appear here as they reach portfolio-ready status. Pinned row (planned):
-
-| Project | What it is |
-|---|---|
-| [`portfolio-index`](https://github.com/grezap/portfolio-index) | Skills matrix + living project grid — start here |
-| `nexus-cli` *(coming soon)* | .NET 10 Native AOT CLI — single-binary infrastructure control |
-| `portfolio` *(coming soon)* | Blazor Server portfolio website — the site that lists everything else |
-| `dataflow-studio` *(coming soon)* | SQL Server CDC → Kafka → StarRocks + ClickHouse data platform |
-| `sentinelml` *(coming soon)* | Fraud/anomaly ML with automated drift-triggered retraining |
-| `nexus-platform` *(coming soon)* | Microservices reference — gRPC + Kafka + REST, sagas, K8s-ready |
+| Project | Status | What it is |
+|---|---|---|
+| [`portfolio-index`](https://github.com/grezap/portfolio-index) | 🟢 live | Skills matrix + living project grid — start here |
+| [`nexus-infra-vmware`](https://github.com/grezap/nexus-infra-vmware) | 🟢 live | Tier-1 foundation — Vault HA + PKI + AD DS + dnsmasq gateway. Phase 0.D closed + 0.E/0.H Vault scaffolding |
+| [`nexus-infra-swarm-nomad`](https://github.com/grezap/nexus-infra-swarm-nomad) | 🟢 `v0.2.0` | Tier-2 orchestration — 3+3 Docker Swarm + Nomad + Consul + Portainer CE, cold-rebuildable |
+| [`nexus-infra-kafka`](https://github.com/grezap/nexus-infra-kafka) | 🟢 `v0.1.0` | Tier-3 Kafka ecosystem — 15 VMs, two mTLS KRaft clusters + Schema Registry + Connect/Debezium + ksqlDB + MM2 |
+| [`nexus-cli`](https://github.com/grezap/nexus-cli) | 🟢 `v0.4.0` | .NET 10 Native AOT CLI — 4 of 5 master-plan verbs (`cluster-status` · `infrastructure` · `failover-test` · `demo`); `kafka failover` queued for v0.5 |
+| `portfolio` *(coming soon)* | ⚪ planned | Blazor Server portfolio website — the site that lists everything else |
+| `dataflow-studio` *(coming soon)* | ⚪ planned | SQL Server CDC → Kafka → StarRocks + ClickHouse data platform |
+| `nexus-platform` *(coming soon)* | ⚪ planned | Microservices reference — gRPC + Kafka + REST, sagas, K8s-ready |
 
 ## Top skills
 
