@@ -34,18 +34,23 @@ complete project grid with live status.
 
 ## Currently building
 
-> **Phase 0 — Infrastructure foundation** *(in flight, ~70% complete)*
-> The 66-VM lab is two-thirds built. Foundation tier (AD DS + HashiCorp Vault HA on
-> Raft + PKI + LDAPS + Transit auto-unseal), orchestration tier (Docker Swarm +
+> **Phase 0 — Infrastructure foundation** *(in flight, ~75% complete)*
+> The 66-VM lab is three-quarters built. Foundation tier (AD DS + HashiCorp Vault HA
+> on Raft + PKI + LDAPS + Transit auto-unseal), orchestration tier (Docker Swarm +
 > HashiCorp Nomad/Consul + Portainer CE, mTLS end-to-end), the **Kafka ecosystem
 > tier** (two KRaft clusters on mutual TLS + Schema Registry + Connect + Debezium +
 > ksqlDB + MirrorMaker 2 cross-cluster DR), and the **OLTP data tier** (6-node Redis
-> 8.0 Cluster + 3-node MongoDB 8.0 Replica Set, both on mTLS via Vault PKI, both
-> cold-rebuild-proven) are all live. The .NET 10 Native AOT operator CLI (`nexus-cli`)
-> ships **all 5 of 5 master-plan verbs** as of `v0.5.0` — Phase 0.F closed; live RTOs
-> all under master-plan budgets. Next: 0.G.3+ (Percona MySQL HA + Patroni Postgres
-> HA) to complete the data tier, then the application phases (Vol01-Vol13 —
-> `dataflow-studio` lights up first).
+> 8.0 Cluster + 3-node MongoDB 8.0 Replica Set + **3-node Percona XtraDB Cluster +
+> 2-node ProxySQL with VRRP-floated VIP**, all on mTLS via Vault PKI, all cold-
+> rebuild-proven end-to-end via per-engine Packer templates + per-cluster Terraform
+> states) are all live. The .NET 10 Native AOT operator CLI (`nexus-cli`) ships
+> **all 5 of 5 master-plan verbs** as of `v0.5.0` — Phase 0.F closed; live RTOs
+> all under master-plan budgets. **0.G.3.5 architectural refactor** (per-cluster
+> Terraform state + per-engine Packer template — the rule born from 0.G.3's
+> 16-transient stall) canonized; shrinks per-cluster iteration from ~30 min
+> monolithic → ~5-10 min. Next: 0.G.4 (Patroni Postgres HA + etcd + HAProxy) +
+> 0.G.7 (SQL Server FCI/AG on Windows Server 2025) to complete the data tier, then
+> the application phases (Vol01-Vol13 — `dataflow-studio` lights up first).
 
 ## Pinned projects
 
@@ -55,7 +60,7 @@ complete project grid with live status.
 | [`nexus-infra-vmware`](https://github.com/grezap/nexus-infra-vmware) | 🟢 live | Tier-1 foundation — Vault HA + PKI + AD DS + dnsmasq gateway. Phase 0.D closed + 0.E/0.H Vault scaffolding |
 | [`nexus-infra-swarm-nomad`](https://github.com/grezap/nexus-infra-swarm-nomad) | 🟢 `v0.2.0` | Tier-2 orchestration — 3+3 Docker Swarm + Nomad + Consul + Portainer CE, cold-rebuildable |
 | [`nexus-infra-kafka`](https://github.com/grezap/nexus-infra-kafka) | 🟢 `v0.1.0` | Tier-3 Kafka ecosystem — 15 VMs, two mTLS KRaft clusters + Schema Registry + Connect/Debezium + ksqlDB + MM2 |
-| [`nexus-infra-oltp`](https://github.com/grezap/nexus-infra-oltp) | 🟡 Phase 0.G | Tier-3 OLTP data tier — 6-node Redis 8.0 Cluster (mTLS) + 3-node MongoDB 8.0 Replica Set (mTLS + keyFile), both cold-rebuild-proven |
+| [`nexus-infra-oltp`](https://github.com/grezap/nexus-infra-oltp) | 🟢 0.G.1+0.G.2+0.G.3+0.G.3.5 closed | Tier-4 OLTP data tier — 6-node Redis Cluster + 3-node MongoDB RS + 3-node Percona XtraDB Cluster + 2-node ProxySQL with VRRP VIP, all mTLS via Vault PKI, all 3 clusters cold-rebuild-proven via per-engine templates + per-cluster Terraform states (the architectural rule canonized by 0.G.3.5) |
 | [`nexus-cli`](https://github.com/grezap/nexus-cli) | 🟢 `v0.5.0` | .NET 10 Native AOT CLI — **all 5 of 5 master-plan verbs live** (`cluster-status` · `infrastructure` · `failover-test` · `demo` · `kafka failover`). 22.75 MB single binary under the 25 MB gate |
 | `portfolio` *(coming soon)* | ⚪ planned | Blazor Server portfolio website — the site that lists everything else |
 | `dataflow-studio` *(coming soon)* | ⚪ planned | SQL Server CDC → Kafka → StarRocks + ClickHouse data platform |
