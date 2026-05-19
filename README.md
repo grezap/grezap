@@ -51,13 +51,17 @@ complete project grid with live status.
 > monolithic → ~5-10 min. **0.G.4 (Patroni PG 17 HA + etcd 3.5 DCS + HAProxy 3
 > HA pair + VRRP VIP `.60`, 8 VMs) ✅ CLOSED 2026-05-19 end-to-end** — smoke
 > gate 152/152 ALL GREEN; 18 transients surfaced + all root-caused +
-> permanently fixed in source (Debian 13 t64 PGDG-bookworm fallback for
-> PG 17; Patroni 4 password_file/bootstrap.users quirks; HAProxy
-> CAP_SYS_CHROOT + default-server `check` requirement; etc). 4 of 5 OLTP
-> clusters now cold-rebuild proven (22 of 25 VMs); cumulative 45 transients
-> across the tier — the per-cluster small-blast-radius iteration loop made
-> each one tractable. Next: 0.G.7 (SQL Server FCI/AG on Windows Server
-> 2025) to complete the data tier, then the application phases (Vol01-Vol13
+> permanently fixed in source. **0.G.7 (SQL Server FCI + Always On AG on
+> Windows Server 2025, 4 nodes) ✅ SCAFFOLDED 2026-05-20** — full canon
+> hybrid FCI+AG architecture: 2-node WSFC FCI sharing an iSCSI LUN from
+> nexus-gateway (per ADR-0026) + 2 async AG replicas; AG Listener (.70.17)
+> is the LB-tier HA primitive (per ADR-0025; cert IP-SAN .17 validates
+> across failover); SQL service identity = `gmsa-sql-engine$` (first real
+> GMSA consumer in the lab; 0.D.5 scaffolded the infrastructure); AG
+> endpoint authentication cert-based per ADR-0027. **OLTP tier SEALED
+> (5/5 clusters scaffolded — redis + mongo + percona + patroni +
+> sqlserver-fci-ag); 4 of 5 cold-rebuild proven; SQL ratification next.**
+> Next: live-ratify 0.G.7 + complete the application phases (Vol01-Vol13
 > — `dataflow-studio` first).
 
 ## Pinned projects
@@ -68,7 +72,7 @@ complete project grid with live status.
 | [`nexus-infra-vmware`](https://github.com/grezap/nexus-infra-vmware) | 🟢 live | Tier-1 foundation — Vault HA + PKI + AD DS + dnsmasq gateway. Phase 0.D closed + 0.E/0.H Vault scaffolding |
 | [`nexus-infra-swarm-nomad`](https://github.com/grezap/nexus-infra-swarm-nomad) | 🟢 `v0.2.0` | Tier-2 orchestration — 3+3 Docker Swarm + Nomad + Consul + Portainer CE, cold-rebuildable |
 | [`nexus-infra-kafka`](https://github.com/grezap/nexus-infra-kafka) | 🟢 `v0.1.0` | Tier-3 Kafka ecosystem — 15 VMs, two mTLS KRaft clusters + Schema Registry + Connect/Debezium + ksqlDB + MM2 |
-| [`nexus-infra-oltp`](https://github.com/grezap/nexus-infra-oltp) | 🟢 0.G.1+0.G.2+0.G.3+0.G.3.5+0.G.4 CLOSED | Tier-4 OLTP data tier — 22 of 25 VMs cold-rebuild proven across 4 clusters: 6-node Redis Cluster + 3-node MongoDB RS + 3-node Percona XtraDB Cluster + 2-node ProxySQL with VRRP VIP `.50` + 3-node Patroni PG 17 HA + 3-node etcd 3.5 DCS + 2-node HAProxy 3 HA pair + VRRP VIP `.60`. All mTLS via Vault PKI |
+| [`nexus-infra-oltp`](https://github.com/grezap/nexus-infra-oltp) | 🟢 0.G.1-0.G.4 CLOSED + 0.G.7 SCAFFOLDED | Tier-4 OLTP data tier — **SEALED 2026-05-20 (5/5 clusters)**. Cold-rebuild proven on 4 of 5: 6-node Redis Cluster + 3-node MongoDB RS + 3-node Percona XtraDB Cluster + 2-node ProxySQL VIP `.50` + 3-node Patroni PG 17 HA + 3-node etcd DCS + 2-node HAProxy HA pair VIP `.60`. Scaffolded ready-to-ratify: 2-node SQL Server FCI sharing iSCSI LUN + 2 async AG replicas + AG Listener VIP `.70.17`. All mTLS via Vault PKI; first GMSA consumer (gmsa-sql-engine$). 26 of 30 VMs proven |
 | [`nexus-cli`](https://github.com/grezap/nexus-cli) | 🟢 `v0.5.0` | .NET 10 Native AOT CLI — **all 5 of 5 master-plan verbs live** (`cluster-status` · `infrastructure` · `failover-test` · `demo` · `kafka failover`). 22.75 MB single binary under the 25 MB gate |
 | `portfolio` *(coming soon)* | ⚪ planned | Blazor Server portfolio website — the site that lists everything else |
 | `dataflow-studio` *(coming soon)* | ⚪ planned | SQL Server CDC → Kafka → StarRocks + ClickHouse data platform |
