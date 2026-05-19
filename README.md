@@ -48,9 +48,14 @@ complete project grid with live status.
 > all under master-plan budgets. **0.G.3.5 architectural refactor** (per-cluster
 > Terraform state + per-engine Packer template — the rule born from 0.G.3's
 > 16-transient stall) canonized; shrinks per-cluster iteration from ~30 min
-> monolithic → ~5-10 min. Next: 0.G.4 (Patroni Postgres HA + etcd + HAProxy) +
-> 0.G.7 (SQL Server FCI/AG on Windows Server 2025) to complete the data tier, then
-> the application phases (Vol01-Vol13 — `dataflow-studio` lights up first).
+> monolithic → ~5-10 min. **0.G.4 (Patroni PG 17 HA + etcd 3.5 DCS + HAProxy 3
+> HA pair + VRRP VIP `.60`, 8 VMs) scaffolded 2026-05-19** via the same
+> per-cluster + per-engine pattern (3 new Packer templates + per-cluster TF
+> env with 7 overlays incl. NEW haproxy-keepalived + 4 System B JSON demos);
+> live ratification pending. HAProxy HA pair mirrors the 0.G.3 proxysql-1/2
+> + VIP `.50` pattern — no SPOF on the LB tier. Next: live-ratify 0.G.4 then
+> 0.G.7 (SQL Server FCI/AG on Windows Server 2025) to complete the data tier,
+> then the application phases (Vol01-Vol13 — `dataflow-studio` first).
 
 ## Pinned projects
 
@@ -60,7 +65,7 @@ complete project grid with live status.
 | [`nexus-infra-vmware`](https://github.com/grezap/nexus-infra-vmware) | 🟢 live | Tier-1 foundation — Vault HA + PKI + AD DS + dnsmasq gateway. Phase 0.D closed + 0.E/0.H Vault scaffolding |
 | [`nexus-infra-swarm-nomad`](https://github.com/grezap/nexus-infra-swarm-nomad) | 🟢 `v0.2.0` | Tier-2 orchestration — 3+3 Docker Swarm + Nomad + Consul + Portainer CE, cold-rebuildable |
 | [`nexus-infra-kafka`](https://github.com/grezap/nexus-infra-kafka) | 🟢 `v0.1.0` | Tier-3 Kafka ecosystem — 15 VMs, two mTLS KRaft clusters + Schema Registry + Connect/Debezium + ksqlDB + MM2 |
-| [`nexus-infra-oltp`](https://github.com/grezap/nexus-infra-oltp) | 🟢 0.G.1+0.G.2+0.G.3+0.G.3.5 closed | Tier-4 OLTP data tier — 6-node Redis Cluster + 3-node MongoDB RS + 3-node Percona XtraDB Cluster + 2-node ProxySQL with VRRP VIP, all mTLS via Vault PKI, all 3 clusters cold-rebuild-proven via per-engine templates + per-cluster Terraform states (the architectural rule canonized by 0.G.3.5) |
+| [`nexus-infra-oltp`](https://github.com/grezap/nexus-infra-oltp) | 🟢 0.G.1+0.G.2+0.G.3+0.G.3.5 closed; 0.G.4 scaffolded | Tier-4 OLTP data tier — 6-node Redis Cluster + 3-node MongoDB RS + 3-node Percona XtraDB Cluster + 2-node ProxySQL with VRRP VIP (all cold-rebuild-proven via per-engine templates + per-cluster states); + scaffolded 3-node Patroni PG 17 HA + 3-node etcd 3.5 DCS + 2-node HAProxy 3 HA pair + VRRP VIP `.60` (live ratification pending). All mTLS via Vault PKI |
 | [`nexus-cli`](https://github.com/grezap/nexus-cli) | 🟢 `v0.5.0` | .NET 10 Native AOT CLI — **all 5 of 5 master-plan verbs live** (`cluster-status` · `infrastructure` · `failover-test` · `demo` · `kafka failover`). 22.75 MB single binary under the 25 MB gate |
 | `portfolio` *(coming soon)* | ⚪ planned | Blazor Server portfolio website — the site that lists everything else |
 | `dataflow-studio` *(coming soon)* | ⚪ planned | SQL Server CDC → Kafka → StarRocks + ClickHouse data platform |
