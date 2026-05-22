@@ -52,16 +52,19 @@ complete project grid with live status.
 > HA pair + VRRP VIP `.60`, 8 VMs) ✅ CLOSED 2026-05-19 end-to-end** — smoke
 > gate 152/152 ALL GREEN; 18 transients surfaced + all root-caused +
 > permanently fixed in source. **0.G.7 (SQL Server FCI + Always On AG on
-> Windows Server 2025, 4 nodes) ✅ SCAFFOLDED 2026-05-20** — full canon
-> hybrid FCI+AG architecture: 2-node WSFC FCI sharing an iSCSI LUN from
-> nexus-gateway (per ADR-0026) + 2 async AG replicas; AG Listener (.70.17)
-> is the LB-tier HA primitive (per ADR-0025; cert IP-SAN .17 validates
-> across failover); SQL service identity = `gmsa-sql-engine$` (first real
-> GMSA consumer in the lab; 0.D.5 scaffolded the infrastructure); AG
-> endpoint authentication cert-based per ADR-0027. **OLTP tier SEALED
-> (5/5 clusters scaffolded — redis + mongo + percona + patroni +
-> sqlserver-fci-ag); 4 of 5 cold-rebuild proven; SQL ratification next.**
-> Next: live-ratify 0.G.7 + complete the application phases (Vol01-Vol13
+> Windows Server 2025, 4 nodes) ✅ LIVE-RATIFIED 2026-05-22** — smoke
+> `smoke-0.G.7.ps1` **ALL GREEN 56/56**. Full canon hybrid FCI+AG: a
+> 2-node WSFC Failover Cluster Instance (`sqlfci` @ `.70.16`) sharing an
+> iSCSI LUN from nexus-gateway (per ADR-0026) + 2 async AG replicas; AG
+> Listener (`sql-ag-listener` @ `.70.17`) is the LB-tier HA primitive (per
+> ADR-0025) — a remote domain client `sqlcmd -E -N` (Encrypt + strict
+> cert-chain validate) reaches the primary across the listener; SQL service
+> identity = `gmsa-sql-engine$` on the FCI (first real GMSA consumer; 0.D.5
+> scaffolded the infrastructure); AG endpoint authentication cert-based per
+> ADR-0027. First Windows-fleet data cluster + first iSCSI shim; 40+
+> ratification transients all fixed in source. **OLTP tier SEALED — 5/5
+> clusters cold-rebuild proven (redis + mongo + percona + patroni +
+> sqlserver-fci-ag).** Next: complete the application phases (Vol01-Vol13
 > — `dataflow-studio` first).
 
 ## Pinned projects
