@@ -34,8 +34,8 @@ complete project grid with live status.
 
 ## Currently building
 
-> **Phase 0 — Infrastructure foundation** *(in flight, ~75% complete)*
-> The 66-VM lab is three-quarters built. Foundation tier (AD DS + HashiCorp Vault HA
+> **Phase 0 — Infrastructure foundation** *(in flight, ~85% complete)*
+> The 82-VM lab is mostly built. Foundation tier (AD DS + HashiCorp Vault HA
 > on Raft + PKI + LDAPS + Transit auto-unseal), orchestration tier (Docker Swarm +
 > HashiCorp Nomad/Consul + Portainer CE, mTLS end-to-end), the **Kafka ecosystem
 > tier** (two KRaft clusters on mutual TLS + Schema Registry + Connect + Debezium +
@@ -64,8 +64,16 @@ complete project grid with live status.
 > ADR-0027. First Windows-fleet data cluster + first iSCSI shim; 40+
 > ratification transients all fixed in source. **OLTP tier SEALED — 5/5
 > clusters cold-rebuild proven (redis + mongo + percona + patroni +
-> sqlserver-fci-ag).** Next: complete the application phases (Vol01-Vol13
-> — `dataflow-studio` first).
+> sqlserver-fci-ag).** The **analytics tier** (ClickHouse 3×2 + 3-node Keeper,
+> StarRocks 3 FE + 3 BE — `nexus-infra-analytics` `v0.1.0`) and the **lakehouse +
+> registry tier** are live + cold-rebuild-proven: `nexus-infra-lakehouse` (MinIO
+> distributed-EC object store + Iceberg/Nessie REST on a dedicated PG HA pair +
+> Apache Spark HA with a ZooKeeper-elected master pair), and `nexus-infra-registry`
+> — a **highly-available Harbor** container registry (2 stateless app nodes +
+> dedicated PG/Redis HA datastore + VRRP VIP; **image blobs in MinIO S3**; Trivy
+> scanning + cosign signing; **Vault OIDC SSO** → AD; ADR-0036). Next: 0.L.5
+> StarRocks shared-data/CN → 0.I observability → the application phases
+> (`dataflow-studio` first).
 
 ## Pinned projects
 
@@ -76,7 +84,9 @@ complete project grid with live status.
 | [`nexus-infra-swarm-nomad`](https://github.com/grezap/nexus-infra-swarm-nomad) | 🟢 `v0.2.0` | Tier-2 orchestration — 3+3 Docker Swarm + Nomad + Consul + Portainer CE, cold-rebuildable |
 | [`nexus-infra-kafka`](https://github.com/grezap/nexus-infra-kafka) | 🟢 `v0.1.0` | Tier-3 Kafka ecosystem — 15 VMs, two mTLS KRaft clusters + Schema Registry + Connect/Debezium + ksqlDB + MM2 |
 | [`nexus-infra-oltp`](https://github.com/grezap/nexus-infra-oltp) | 🟢 0.G.1-0.G.4 CLOSED + 0.G.7 SCAFFOLDED | Tier-4 OLTP data tier — **SEALED 2026-05-20 (5/5 clusters)**. Cold-rebuild proven on 4 of 5: 6-node Redis Cluster + 3-node MongoDB RS + 3-node Percona XtraDB Cluster + 2-node ProxySQL VIP `.50` + 3-node Patroni PG 17 HA + 3-node etcd DCS + 2-node HAProxy HA pair VIP `.60`. Scaffolded ready-to-ratify: 2-node SQL Server FCI sharing iSCSI LUN + 2 async AG replicas + AG Listener VIP `.70.17`. All mTLS via Vault PKI; first GMSA consumer (gmsa-sql-engine$). 26 of 30 VMs proven |
-| [`nexus-infra-analytics`](https://github.com/grezap/nexus-infra-analytics) | 🟡 0.G.5 + 0.G.6 SCAFFOLDED | Tier-4 analytics data tier — ClickHouse + StarRocks (15 VMs). **ClickHouse**: 3 shards × 2 replicas + 3-node ClickHouse Keeper RAFT quorum (not ZooKeeper), `Distributed`/`ReplicatedMergeTree`, mTLS. **StarRocks**: 3 FE (BDB-JE quorum) + 3 BE, tablets `DISTRIBUTED BY HASH BUCKETS` × `replication_num=3`, MySQL `:9030`. Round-robin DNS front door, **no VIP** (ADR-0031). Per-engine templates + per-cluster TF states + 22 demos + ADRs 0028–0032. Live-ratify + `v0.1.0` pending |
+| [`nexus-infra-analytics`](https://github.com/grezap/nexus-infra-analytics) | 🟢 `v0.1.0` | Tier-4 analytics data tier — ClickHouse + StarRocks (15 VMs), **0.G.5 + 0.G.6 SEALED**. **ClickHouse**: 3 shards × 2 replicas + 3-node ClickHouse Keeper RAFT quorum (not ZooKeeper). **StarRocks**: 3 FE (BDB-JE quorum) + 3 BE, tablets sharded × `replication_num=3`. Round-robin DNS front door, **no VIP** (ADR-0031). Live-ratified + cold-rebuild-proven (129/129 + 73/73); ADRs 0028–0032 |
+| [`nexus-infra-lakehouse`](https://github.com/grezap/nexus-infra-lakehouse) | 🟢 0.L.1-0.L.3 SEALED | Lakehouse tier (`08-spark`, 16 VMs) — **MinIO** distributed erasure-coded object store (round-robin DNS, no VIP) + **Apache Iceberg / Project Nessie** REST catalog ×2 on a dedicated **PostgreSQL HA pair** (keepalived VRRP VIP) + **Apache Spark** standalone **HA** (2 ZooKeeper-elected masters + 3 workers + 3-node ZooKeeper). End-to-end Spark→Iceberg→MinIO write path; all mTLS via Vault PKI; cold-rebuild-proven (ADRs 0033-0035) |
+| [`nexus-infra-registry`](https://github.com/grezap/nexus-infra-registry) | 🟢 0.L.4 SEALED | Registry tier (`09-platform`, 4 VMs + VIP) — **highly-available Harbor**: 2 stateless app nodes (round-robin DNS) + dedicated PostgreSQL/Redis master-replica HA datastore (VRRP VIP); **image blobs in MinIO S3**; Trivy scanning + cosign signing; **Vault OIDC SSO** → AD. Live-ratified + cold-rebuild-proven (41/41; 7 transients fixed in source; ADR-0036) |
 | [`nexus-cli`](https://github.com/grezap/nexus-cli) | 🟢 `v0.5.0` | .NET 10 Native AOT CLI — **all 5 of 5 master-plan verbs live** (`cluster-status` · `infrastructure` · `failover-test` · `demo` · `kafka failover`). 22.75 MB single binary under the 25 MB gate |
 | `portfolio` *(coming soon)* | ⚪ planned | Blazor Server portfolio website — the site that lists everything else |
 | `dataflow-studio` *(coming soon)* | ⚪ planned | SQL Server CDC → Kafka → StarRocks + ClickHouse data platform |
