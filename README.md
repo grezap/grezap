@@ -27,7 +27,7 @@ I design and ship end-to-end .NET / C# systems on production-grade infrastructur
 — SQL Server Always On, Kafka, StarRocks, ClickHouse, Percona MySQL, Kubernetes, Docker
 Swarm, HashiCorp Nomad/Consul/Vault — with full observability and documented runbooks.
 
-The work is organised as the **NexusPlatform portfolio**: 13 application projects, 2
+The work is organised as the **NexusPlatform portfolio**: 14 application projects, 7 built
 infrastructure repositories, and a 4-app native Windows suite, each built to senior-engineer
 standards. See the [portfolio index](https://github.com/grezap/portfolio-index) for the
 complete project grid with live status.
@@ -35,7 +35,7 @@ complete project grid with live status.
 ## Currently building
 
 > **Phase 0 — Infrastructure foundation** *(in flight, ~85% complete)*
-> The 82-VM lab is mostly built. Foundation tier (AD DS + HashiCorp Vault HA
+> The 88-VM lab is mostly built. Foundation tier (AD DS + HashiCorp Vault HA
 > on Raft + PKI + LDAPS + Transit auto-unseal), orchestration tier (Docker Swarm +
 > HashiCorp Nomad/Consul + Portainer CE, mTLS end-to-end), the **Kafka ecosystem
 > tier** (two KRaft clusters on mutual TLS + Schema Registry + Connect + Debezium +
@@ -83,7 +83,7 @@ complete project grid with live status.
 | [`nexus-infra-vmware`](https://github.com/grezap/nexus-infra-vmware) | 🟢 live | Tier-1 foundation — Vault HA + PKI + AD DS + dnsmasq gateway. Phase 0.D closed + 0.E/0.H Vault scaffolding |
 | [`nexus-infra-swarm-nomad`](https://github.com/grezap/nexus-infra-swarm-nomad) | 🟢 `v0.2.0` | Tier-2 orchestration — 3+3 Docker Swarm + Nomad + Consul + Portainer CE, cold-rebuildable |
 | [`nexus-infra-kafka`](https://github.com/grezap/nexus-infra-kafka) | 🟢 `v0.1.0` | Tier-3 Kafka ecosystem — 15 VMs, two mTLS KRaft clusters + Schema Registry + Connect/Debezium + ksqlDB + MM2 |
-| [`nexus-infra-oltp`](https://github.com/grezap/nexus-infra-oltp) | 🟢 0.G.1-0.G.4 CLOSED + 0.G.7 SCAFFOLDED | Tier-4 OLTP data tier — **SEALED 2026-05-20 (5/5 clusters)**. Cold-rebuild proven on 4 of 5: 6-node Redis Cluster + 3-node MongoDB RS + 3-node Percona XtraDB Cluster + 2-node ProxySQL VIP `.50` + 3-node Patroni PG 17 HA + 3-node etcd DCS + 2-node HAProxy HA pair VIP `.60`. Scaffolded ready-to-ratify: 2-node SQL Server FCI sharing iSCSI LUN + 2 async AG replicas + AG Listener VIP `.70.17`. All mTLS via Vault PKI; first GMSA consumer (gmsa-sql-engine$). 26 of 30 VMs proven |
+| [`nexus-infra-oltp`](https://github.com/grezap/nexus-infra-oltp) | 🟢 SEALED 5/5 | Tier-4 OLTP data tier — **SEALED 2026-05-22, all 5 clusters cold-rebuild proven (26 VMs)**: 6-node Redis Cluster + 3-node MongoDB RS + 3-node Percona XtraDB Cluster + 2-node ProxySQL VIP `.50` + 3-node Patroni PG 17 HA + 3-node etcd DCS + 2-node HAProxy HA pair VIP `.60` + **2-node SQL Server FCI (shared iSCSI LUN) + 2 async AG replicas + AG Listener VIP `.17`** (0.G.7 live-ratified; `smoke-0.G.7.ps1` 56/56). All mTLS via Vault PKI; first GMSA consumer (`gmsa-sql-engine$`); per-engine templates + per-cluster states. |
 | [`nexus-infra-analytics`](https://github.com/grezap/nexus-infra-analytics) | 🟢 `v0.1.0` | Tier-4 analytics data tier — ClickHouse + StarRocks (15 VMs), **0.G.5 + 0.G.6 SEALED**. **ClickHouse**: 3 shards × 2 replicas + 3-node ClickHouse Keeper RAFT quorum (not ZooKeeper). **StarRocks**: 3 FE (BDB-JE quorum) + 3 BE, tablets sharded × `replication_num=3`. Round-robin DNS front door, **no VIP** (ADR-0031). Live-ratified + cold-rebuild-proven (129/129 + 73/73); ADRs 0028–0032 |
 | [`nexus-infra-lakehouse`](https://github.com/grezap/nexus-infra-lakehouse) | 🟢 0.L.1-0.L.3 SEALED | Lakehouse tier (`08-spark`, 16 VMs) — **MinIO** distributed erasure-coded object store (round-robin DNS, no VIP) + **Apache Iceberg / Project Nessie** REST catalog ×2 on a dedicated **PostgreSQL HA pair** (keepalived VRRP VIP) + **Apache Spark** standalone **HA** (2 ZooKeeper-elected masters + 3 workers + 3-node ZooKeeper). End-to-end Spark→Iceberg→MinIO write path; all mTLS via Vault PKI; cold-rebuild-proven (ADRs 0033-0035) |
 | [`nexus-infra-registry`](https://github.com/grezap/nexus-infra-registry) | 🟢 0.L.4 SEALED | Registry tier (`09-platform`, 4 VMs + VIP) — **highly-available Harbor**: 2 stateless app nodes (round-robin DNS) + dedicated PostgreSQL/Redis master-replica HA datastore (VRRP VIP); **image blobs in MinIO S3**; Trivy scanning + cosign signing; **Vault OIDC SSO** → AD. Live-ratified + cold-rebuild-proven (41/41; 7 transients fixed in source; ADR-0036) |
