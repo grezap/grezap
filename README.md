@@ -80,9 +80,14 @@ complete project grid with live status.
 > `starrocks-tenant` policy; ADR-0037 amends ADR-0030; `smoke-0.L.5.ps1`
 > **69/69** GREEN with CN-loss chaos default-on, proving the shared-data HA
 > property — any CN serves any query from shared MinIO storage). Fleet 93 VMs
-> built/cold-rebuild-proven. Next: 0.L.6 close-out (analytics `v0.2.0` +
-> lakehouse `v0.1.0` + registry `v0.1.0` tags) → 0.I observability → the
-> application phases (`dataflow-studio` first).
+> built/cold-rebuild-proven. **0.L.6 close-out COMPLETE 2026-05-26** — 3 tags
+> shipped (`nexus-infra-lakehouse v0.1.0` · `nexus-infra-registry v0.1.0` ·
+> `nexus-infra-analytics v0.2.0`). **Phase 0.I observability scaffolded
+> 2026-05-26 (ADR-0038)** — new repo `nexus-infra-observability`, **Grafana
+> LGTM stack** (Prom HA + Grafana HA behind VRRP VIP + Loki on MinIO + Tempo
+> on MinIO + Alertmanager mesh + OTel Collector pair); 14 VMs + 2 VIPs; HA
+> across the LB tier per ADR-0025; C# and Python equal-class via OTel SDKs.
+> Next: the application phases (`dataflow-studio` first).
 
 ## Pinned projects
 
@@ -110,7 +115,7 @@ complete project grid with live status.
 ●  StarRocks · ClickHouse · Redis Cluster · Kimball modelling · SCD2
 ●  ML.NET · ONNX · PyTorch→ONNX · Semantic Kernel · Ollama · HuggingFace
 ●  Docker Swarm · HashiCorp Nomad · Consul · Vault · Kubernetes · Terraform · Packer
-●  OpenTelemetry · Prometheus · Grafana · Jaeger · Seq
+●  OpenTelemetry · Prometheus HA · Grafana HA (VRRP VIP) · Loki · Tempo · Alertmanager
 ●  Windows Forms · WPF · WinUI 3 · MAUI · MVVM · ReactiveUI
 ```
 
