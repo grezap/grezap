@@ -82,21 +82,19 @@ complete project grid with live status.
 > property — any CN serves any query from shared MinIO storage). Fleet 105 VMs
 > + 5 VIPs built/cold-rebuild-proven. **0.L.6 close-out COMPLETE 2026-05-26** —
 > 3 tags shipped (`nexus-infra-lakehouse v0.1.0` · `nexus-infra-registry v0.1.0`
-> · `nexus-infra-analytics v0.2.0`). **Phase 0.I observability sub-phases 0.I.1
-> through 0.I.5 SEALED 2026-05-27 (ADR-0038)** — all live-ratified +
-> cold-rebuild-proven; new repo `nexus-infra-observability`. **Grafana LGTM
-> stack** progressively up: Prom HA + Alertmanager mesh (0.I.1) · Loki SSD on
+> · `nexus-infra-analytics v0.2.0`). **Phase 0.I observability COMPLETE
+> 2026-05-28 (ADR-0038) -- `nexus-infra-observability v0.1.0` tagged.** All
+> 7 sub-phases SEALED (live-ratified + cold-rebuild-proven). **Grafana LGTM
+> stack** fully up: Prom HA + Alertmanager mesh (0.I.1) · Loki SSD on
 > MinIO (0.I.2) · Tempo scalable on MinIO (0.I.3) · **Grafana HA + Grafana PG
-> HA + 2 VRRP VIPs `grafana.nexus.lab .184` + `grafana-db.nexus.lab .185` (0.I.4)
-> — active-active Grafana over a dedicated shared PG state DB, atomic
-> sub-second failover, cert IP-SAN includes the VIP so `sslmode=verify-full`
-> validates against the floating endpoint** · **OTel Collector pair `otel-collector-1/2`
-> fronted by RR DNS `otel.nexus.lab` (no VIP per ADR-0031); OTLP gRPC :4317 +
-> HTTP :4318 receivers route traces -> Tempo, metrics -> Prom remote-write,
-> logs -> Loki native OTLP (0.I.5)**. 35 apply-time transients fixed in source.
-> 14 obs VMs + 2 VIPs through 0.I.5 (fleet 107 + 5 VIPs cold-rebuild-proven).
-> 0.I.6 (fleet-wide Vector + node_exporter shipper rollout) + 0.I.7 (close-out,
-> tag `v0.1.0`) pending. After 0.I close-out: application phases (`dataflow-studio`
+> HA + 2 VRRP VIPs `grafana.nexus.lab .184` + `grafana-db.nexus.lab .185` (0.I.4)** ·
+> **OTel Collector pair behind RR DNS `otel.nexus.lab` (0.I.5)** · **Vector log
+> shipper added to shared `nexus_observability` ansible role + live retrofit
+> via `scripts/fleet-vector-rollout.ps1`; every fleet Linux node ships
+> journald + /var/log/* to Loki HA tagged `fleet=nexusplatform` (0.I.6)** ·
+> 3-layer canon sweep + tag (0.I.7). 39 transients permanently fixed in source.
+> 14 obs VMs + 2 VIPs (fleet 107 + 5 VIPs cold-rebuild-proven).
+> After 0.I close-out: application phases (`dataflow-studio`
 > first).
 
 ## Pinned projects
