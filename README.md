@@ -79,15 +79,22 @@ complete project grid with live status.
 > with a dedicated `nexus-starrocks-app` service account + scoped
 > `starrocks-tenant` policy; ADR-0037 amends ADR-0030; `smoke-0.L.5.ps1`
 > **69/69** GREEN with CN-loss chaos default-on, proving the shared-data HA
-> property — any CN serves any query from shared MinIO storage). Fleet 93 VMs
-> built/cold-rebuild-proven. **0.L.6 close-out COMPLETE 2026-05-26** — 3 tags
-> shipped (`nexus-infra-lakehouse v0.1.0` · `nexus-infra-registry v0.1.0` ·
-> `nexus-infra-analytics v0.2.0`). **Phase 0.I observability scaffolded
-> 2026-05-26 (ADR-0038)** — new repo `nexus-infra-observability`, **Grafana
-> LGTM stack** (Prom HA + Grafana HA behind VRRP VIP + Loki on MinIO + Tempo
-> on MinIO + Alertmanager mesh + OTel Collector pair); 14 VMs + 2 VIPs; HA
-> across the LB tier per ADR-0025; C# and Python equal-class via OTel SDKs.
-> Next: the application phases (`dataflow-studio` first).
+> property — any CN serves any query from shared MinIO storage). Fleet 105 VMs
+> + 5 VIPs built/cold-rebuild-proven. **0.L.6 close-out COMPLETE 2026-05-26** —
+> 3 tags shipped (`nexus-infra-lakehouse v0.1.0` · `nexus-infra-registry v0.1.0`
+> · `nexus-infra-analytics v0.2.0`). **Phase 0.I observability sub-phases 0.I.1
+> + 0.I.2 + 0.I.3 + 0.I.4 SEALED 2026-05-27 (ADR-0038)** — all live-ratified +
+> cold-rebuild-proven; new repo `nexus-infra-observability`. **Grafana LGTM
+> stack** progressively up: Prom HA + Alertmanager mesh (0.I.1) · Loki SSD on
+> MinIO (0.I.2) · Tempo scalable on MinIO (0.I.3) · **Grafana HA + Grafana PG
+> HA + 2 VRRP VIPs `grafana.nexus.lab .184` + `grafana-db.nexus.lab .185` (0.I.4)
+> — active-active Grafana over a dedicated shared PG state DB, atomic
+> sub-second failover, cert IP-SAN includes the VIP so `sslmode=verify-full`
+> validates against the floating endpoint**. 31 apply-time transients fixed
+> in source. 12 obs VMs + 2 VIPs through 0.I.4. 0.I.5 (OTel Collector pair) +
+> 0.I.6 (fleet-wide Vector + node_exporter shipper rollout) + 0.I.7 (close-out,
+> tag `v0.1.0`) pending. After 0.I close-out: application phases (`dataflow-studio`
+> first).
 
 ## Pinned projects
 
