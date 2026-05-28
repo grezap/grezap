@@ -94,8 +94,13 @@ complete project grid with live status.
 > journald + /var/log/* to Loki HA tagged `fleet=nexusplatform` (0.I.6)** ·
 > 3-layer canon sweep + tag (0.I.7). 39 transients permanently fixed in source.
 > 14 obs VMs + 2 VIPs (fleet 107 + 5 VIPs cold-rebuild-proven).
-> After 0.I close-out: application phases (`dataflow-studio`
-> first).
+> **Phase 0.M foundation HA COMPLETE 2026-05-28 (ADR-0039) — `dc-nexus-2`
+> live-ratified + cold-rebuild-proven (smoke-0.M 24/24 GREEN; 2 transients
+> caught + fixed in source).** 2nd AD DC closes the lab's last single-DC
+> SPOF — multi-master replication + replicated DNS + DC Locator failover.
+> Fleet 108 VMs + 5 VIPs cold-rebuild-proven. After 0.M: 0.N MongoDB
+> sharded cluster · 0.O nexus-infra-vitess · 0.P nexus-infra-citus · then
+> application phases (`dataflow-studio` first).
 
 ## Pinned projects
 
