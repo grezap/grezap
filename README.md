@@ -94,13 +94,17 @@ complete project grid with live status.
 > journald + /var/log/* to Loki HA tagged `fleet=nexusplatform` (0.I.6)** ·
 > 3-layer canon sweep + tag (0.I.7). 39 transients permanently fixed in source.
 > 14 obs VMs + 2 VIPs (fleet 107 + 5 VIPs cold-rebuild-proven).
-> **Phase 0.M foundation HA COMPLETE 2026-05-28 (ADR-0039) — `dc-nexus-2`
-> live-ratified + cold-rebuild-proven (smoke-0.M 24/24 GREEN; 2 transients
-> caught + fixed in source).** 2nd AD DC closes the lab's last single-DC
-> SPOF — multi-master replication + replicated DNS + DC Locator failover.
-> Fleet 108 VMs + 5 VIPs cold-rebuild-proven. After 0.M: 0.N MongoDB
-> sharded cluster · 0.O nexus-infra-vitess · 0.P nexus-infra-citus · then
-> application phases (`dataflow-studio` first).
+> **Phase 0.N MongoDB sharded cluster SEALED 2026-05-30 (ADR-0040) —
+> live-ratified + cold-rebuild-proven (`smoke-0.N.ps1` 50/50 GREEN both
+> times).** 11 VMs: 3 config-server RS + 2 shard RSes (3 each) + 2 stateless
+> `mongos` routers — the **document-store sharding** showcase (chunks span
+> both shards; `mongos` routes keyed lookups) alongside the 0.G.2 replica-set
+> (replication) showcase. keyFile auth; 10 transients fixed in source. OLTP
+> tier now **6/6 cold-rebuild-proven**. (Prior: **Phase 0.M foundation HA
+> COMPLETE 2026-05-28, ADR-0039** — 2nd AD DC `dc-nexus-2` closes the last
+> single-DC SPOF.) Fleet **119 VMs + 5 VIPs** cold-rebuild-proven. After 0.N:
+> 0.O nexus-infra-vitess (MySQL sharding) · 0.P nexus-infra-citus (PG
+> sharding) · then application phases (`dataflow-studio` first).
 
 ## Pinned projects
 
@@ -110,7 +114,7 @@ complete project grid with live status.
 | [`nexus-infra-vmware`](https://github.com/grezap/nexus-infra-vmware) | 🟢 live | Tier-1 foundation — Vault HA + PKI + AD DS + dnsmasq gateway. Phase 0.D closed + 0.E/0.H Vault scaffolding |
 | [`nexus-infra-swarm-nomad`](https://github.com/grezap/nexus-infra-swarm-nomad) | 🟢 `v0.2.0` | Tier-2 orchestration — 3+3 Docker Swarm + Nomad + Consul + Portainer CE, cold-rebuildable |
 | [`nexus-infra-kafka`](https://github.com/grezap/nexus-infra-kafka) | 🟢 `v0.1.0` | Tier-3 Kafka ecosystem — 15 VMs, two mTLS KRaft clusters + Schema Registry + Connect/Debezium + ksqlDB + MM2 |
-| [`nexus-infra-oltp`](https://github.com/grezap/nexus-infra-oltp) | 🟢 SEALED 5/5 | Tier-4 OLTP data tier — **SEALED 2026-05-22, all 5 clusters cold-rebuild proven (26 VMs)**: 6-node Redis Cluster + 3-node MongoDB RS + 3-node Percona XtraDB Cluster + 2-node ProxySQL VIP `.50` + 3-node Patroni PG 17 HA + 3-node etcd DCS + 2-node HAProxy HA pair VIP `.60` + **2-node SQL Server FCI (shared iSCSI LUN) + 2 async AG replicas + AG Listener VIP `.17`** (0.G.7 live-ratified; `smoke-0.G.7.ps1` 56/56). All mTLS via Vault PKI; first GMSA consumer (`gmsa-sql-engine$`); per-engine templates + per-cluster states. |
+| [`nexus-infra-oltp`](https://github.com/grezap/nexus-infra-oltp) | 🟢 SEALED 6/6 | Tier-4 OLTP data tier — **6 clusters cold-rebuild proven (37 VMs)**: 6-node Redis Cluster + 3-node MongoDB RS + 3-node Percona XtraDB Cluster + 2-node ProxySQL VIP `.50` + 3-node Patroni PG 17 HA + 3-node etcd DCS + 2-node HAProxy HA pair VIP `.60` + **2-node SQL Server FCI (shared iSCSI LUN) + 2 async AG replicas + AG Listener VIP `.17`** (0.G.7; `smoke-0.G.7.ps1` 56/56) + **11-node MongoDB sharded cluster** (3 config RS + 2×3 shard RSes + 2 `mongos` routers; 0.N live-ratified + cold-rebuild-proven 2026-05-30, `smoke-0.N.ps1` 50/50). All mTLS via Vault PKI (sharded-Mongo keyFile auth, mTLS in 0.N.1); first GMSA consumer (`gmsa-sql-engine$`); per-engine templates + per-cluster states. |
 | [`nexus-infra-analytics`](https://github.com/grezap/nexus-infra-analytics) | 🟢 `v0.2.0` | Tier-4 analytics data tier — ClickHouse + StarRocks **shared-nothing** + StarRocks **shared-data** (20 VMs, **0.G.5 + 0.G.6 + 0.L.5 ALL SEALED**). **ClickHouse**: 3 shards × 2 replicas + 3-node ClickHouse Keeper RAFT quorum (not ZooKeeper). **StarRocks shared-nothing**: 3 FE (BDB-JE quorum) + 3 BE, tablets sharded × `replication_num=3`. **StarRocks shared-data**: 3 FE (BDB-JE) + 2 stateless Compute Nodes, internal cloud-native tables in a MinIO storage volume (`s3://starrocks/` with a scoped `starrocks-tenant` policy). Round-robin DNS front door, **no VIP** (ADR-0031). All 3 clusters live-ratified + cold-rebuild-proven (129/129 + 73/73 + 69/69); chaos default-on on the sd smoke proves any-CN-serves-any-query from shared MinIO. ADRs 0028–0032 + 0037 |
 | [`nexus-infra-lakehouse`](https://github.com/grezap/nexus-infra-lakehouse) | 🟢 `v0.1.0` | Lakehouse tier (`08-spark`, 16 VMs) — **MinIO** distributed erasure-coded object store (round-robin DNS, no VIP) + **Apache Iceberg / Project Nessie** REST catalog ×2 on a dedicated **PostgreSQL HA pair** (keepalived VRRP VIP) + **Apache Spark** standalone **HA** (2 ZooKeeper-elected masters + 3 workers + 3-node ZooKeeper). End-to-end Spark→Iceberg→MinIO write path; all mTLS via Vault PKI; cold-rebuild-proven (ADRs 0033-0035) |
 | [`nexus-infra-registry`](https://github.com/grezap/nexus-infra-registry) | 🟢 `v0.1.0` | Registry tier (`09-platform`, 4 VMs + VIP) — **highly-available Harbor**: 2 stateless app nodes (round-robin DNS) + dedicated PostgreSQL/Redis master-replica HA datastore (VRRP VIP); **image blobs in MinIO S3**; Trivy scanning + cosign signing; **Vault OIDC SSO** → AD. Live-ratified + cold-rebuild-proven (41/41; 7 transients fixed in source; ADR-0036) |
