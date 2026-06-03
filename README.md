@@ -35,7 +35,7 @@ complete project grid with live status.
 ## Currently building
 
 > **Phase 0 — Infrastructure foundation** *(in flight, ~85% complete)*
-> The 131-VM lab is mostly built. Foundation tier (AD DS + HashiCorp Vault HA
+> The 140-VM lab is mostly built. Foundation tier (AD DS + HashiCorp Vault HA
 > on Raft + PKI + LDAPS + Transit auto-unseal), orchestration tier (Docker Swarm +
 > HashiCorp Nomad/Consul + Portainer CE, mTLS end-to-end), the **Kafka ecosystem
 > tier** (two KRaft clusters on mutual TLS + Schema Registry + Connect + Debezium +
@@ -113,9 +113,22 @@ complete project grid with live status.
 > shards; **VTOrc auto-reparents** a shard (~15s) on PRIMARY kill. Vitess
 > v24.0.1; full Vault-PKI mTLS on every gRPC channel + the mysqld wire + the
 > vtgate MySQL listener. The **relational (MySQL) sharding** showcase,
-> distinct from PXC/Galera *replication* (0.G.3). Fleet **131 VMs + 5 VIPs**
-> cold-rebuild-proven. After 0.O: 0.P nexus-infra-citus (PG sharding) · then
-> application phases (`dataflow-studio` first).
+> distinct from PXC/Galera *replication* (0.G.3).
+> **Phase 0.P `nexus-infra-citus` SEALED 2026-06-03 (ADR-0042) —
+> live-ratified + cold-rebuild-proven (`smoke-0.P.ps1` 69/69 GREEN both times
+> incl worker Patroni failover); tagged `v0.1.0`.** 9 VMs + 3 VRRP VIPs on tier
+> `08-citus`: 3-node etcd 3.5 DCS + a coordinator Patroni pair (VIP
+> `coord.citus.nexus.lab`) holding the `pg_dist_*` catalog + 2 worker Patroni
+> pairs (VIPs `worker{1,2}.citus.nexus.lab`) holding the shards. **PostgreSQL 17
+> + Citus 14.x**; a distributed `events` table (32 shards) spreads across both
+> worker groups, with reference + colocated tables. Every node-group is a
+> 2-node Patroni cluster over the shared etcd DCS, fronted by a **keepalived
+> VRRP VIP that follows the Patroni leader** (workers registered in
+> `pg_dist_node` by VIP, so a failover needs no metadata rewrite). Full
+> Vault-PKI mTLS on the PG wire + etcd + Patroni REST. The **relational
+> (PostgreSQL) sharding** showcase with full Patroni HA, distinct from Patroni
+> *streaming replication* (0.G.4). Fleet **140 VMs + 8 VIPs**
+> cold-rebuild-proven. After 0.P: application phases (`dataflow-studio` first).
 
 ## Pinned projects
 
@@ -130,6 +143,7 @@ complete project grid with live status.
 | [`nexus-infra-lakehouse`](https://github.com/grezap/nexus-infra-lakehouse) | 🟢 `v0.1.0` | Lakehouse tier (`08-spark`, 16 VMs) — **MinIO** distributed erasure-coded object store (round-robin DNS, no VIP) + **Apache Iceberg / Project Nessie** REST catalog ×2 on a dedicated **PostgreSQL HA pair** (keepalived VRRP VIP) + **Apache Spark** standalone **HA** (2 ZooKeeper-elected masters + 3 workers + 3-node ZooKeeper). End-to-end Spark→Iceberg→MinIO write path; all mTLS via Vault PKI; cold-rebuild-proven (ADRs 0033-0035) |
 | [`nexus-infra-registry`](https://github.com/grezap/nexus-infra-registry) | 🟢 `v0.1.0` | Registry tier (`09-platform`, 4 VMs + VIP) — **highly-available Harbor**: 2 stateless app nodes (round-robin DNS) + dedicated PostgreSQL/Redis master-replica HA datastore (VRRP VIP); **image blobs in MinIO S3**; Trivy scanning + cosign signing; **Vault OIDC SSO** → AD. Live-ratified + cold-rebuild-proven (41/41; 7 transients fixed in source; ADR-0036) |
 | [`nexus-infra-vitess`](https://github.com/grezap/nexus-infra-vitess) | 🟢 `v0.1.0` | Vitess-sharded MySQL tier (`07-vitess`, 12 VMs) — the **relational (MySQL) sharding** showcase (distinct from PXC/Galera *replication*). 3-node etcd topo + vtctld/VTOrc control + 2 vtgate routers (RR DNS, MySQL `:15306`) + 2 shards × 3 Percona Server 8.4 tablets; keyspace `commerce`, hash vindex; Vitess v24.0.1; full Vault-PKI mTLS. Live-ratified + cold-rebuild-proven (`smoke-0.O.ps1` 71/71; VTOrc auto-reparent + 53/47 shard split proven; ADR-0041) |
+| [`nexus-infra-citus`](https://github.com/grezap/nexus-infra-citus) | 🟢 `v0.1.0` | Citus-sharded PostgreSQL tier (`08-citus`, 9 VMs + 3 VRRP VIPs) — the **relational (PostgreSQL) sharding** showcase with **full Patroni HA** (distinct from Patroni *streaming replication*). 3-node etcd DCS + coordinator Patroni pair + 2 worker Patroni pairs; PostgreSQL 17 + Citus 14.x; distributed (32-shard) + reference + colocated tables; every node-group fronted by a keepalived VRRP VIP that follows the Patroni leader (workers in `pg_dist_node` by VIP); full Vault-PKI mTLS. Live-ratified + cold-rebuild-proven (`smoke-0.P.ps1` 69/69 incl worker Patroni failover; ADR-0042) |
 | [`nexus-cli`](https://github.com/grezap/nexus-cli) | 🟢 `v0.5.0` | .NET 10 Native AOT CLI — **all 5 of 5 master-plan verbs live** (`cluster-status` · `infrastructure` · `failover-test` · `demo` · `kafka failover`). 22.75 MB single binary under the 25 MB gate |
 | `portfolio` *(coming soon)* | ⚪ planned | Blazor Server portfolio website — the site that lists everything else |
 | `dataflow-studio` *(coming soon)* | ⚪ planned | SQL Server CDC → Kafka → StarRocks + ClickHouse data platform |
