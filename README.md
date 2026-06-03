@@ -35,7 +35,7 @@ complete project grid with live status.
 ## Currently building
 
 > **Phase 0 — Infrastructure foundation** *(in flight, ~85% complete)*
-> The 88-VM lab is mostly built. Foundation tier (AD DS + HashiCorp Vault HA
+> The 131-VM lab is mostly built. Foundation tier (AD DS + HashiCorp Vault HA
 > on Raft + PKI + LDAPS + Transit auto-unseal), orchestration tier (Docker Swarm +
 > HashiCorp Nomad/Consul + Portainer CE, mTLS end-to-end), the **Kafka ecosystem
 > tier** (two KRaft clusters on mutual TLS + Schema Registry + Connect + Debezium +
@@ -102,9 +102,20 @@ complete project grid with live status.
 > (replication) showcase. keyFile auth; 10 transients fixed in source. OLTP
 > tier now **6/6 cold-rebuild-proven**. (Prior: **Phase 0.M foundation HA
 > COMPLETE 2026-05-28, ADR-0039** — 2nd AD DC `dc-nexus-2` closes the last
-> single-DC SPOF.) Fleet **119 VMs + 5 VIPs** cold-rebuild-proven. After 0.N:
-> 0.O nexus-infra-vitess (MySQL sharding) · 0.P nexus-infra-citus (PG
-> sharding) · then application phases (`dataflow-studio` first).
+> single-DC SPOF.)
+> **Phase 0.O `nexus-infra-vitess` SEALED 2026-06-03 (ADR-0041) —
+> live-ratified + cold-rebuild-proven (`smoke-0.O.ps1` 71/71 GREEN both
+> times); tagged `v0.1.0`.** 12 VMs on tier `07-vitess`: 3-node etcd 3.5.16
+> topo + a control node (vtctld + VTOrc) + 2 stateless vtgate routers (RR DNS
+> `vtgate.nexus.lab`, MySQL `:15306`) + 2 shards × 3 tablets (vttablet +
+> Percona Server 8.4 LTS). Keyspace `commerce`, 2 shards (`-80`/`80-`) on a
+> **hash vindex** — one vtgate insert splits 100 rows 53/47 across both
+> shards; **VTOrc auto-reparents** a shard (~15s) on PRIMARY kill. Vitess
+> v24.0.1; full Vault-PKI mTLS on every gRPC channel + the mysqld wire + the
+> vtgate MySQL listener. The **relational (MySQL) sharding** showcase,
+> distinct from PXC/Galera *replication* (0.G.3). Fleet **131 VMs + 5 VIPs**
+> cold-rebuild-proven. After 0.O: 0.P nexus-infra-citus (PG sharding) · then
+> application phases (`dataflow-studio` first).
 
 ## Pinned projects
 
@@ -118,6 +129,7 @@ complete project grid with live status.
 | [`nexus-infra-analytics`](https://github.com/grezap/nexus-infra-analytics) | 🟢 `v0.2.0` | Tier-4 analytics data tier — ClickHouse + StarRocks **shared-nothing** + StarRocks **shared-data** (20 VMs, **0.G.5 + 0.G.6 + 0.L.5 ALL SEALED**). **ClickHouse**: 3 shards × 2 replicas + 3-node ClickHouse Keeper RAFT quorum (not ZooKeeper). **StarRocks shared-nothing**: 3 FE (BDB-JE quorum) + 3 BE, tablets sharded × `replication_num=3`. **StarRocks shared-data**: 3 FE (BDB-JE) + 2 stateless Compute Nodes, internal cloud-native tables in a MinIO storage volume (`s3://starrocks/` with a scoped `starrocks-tenant` policy). Round-robin DNS front door, **no VIP** (ADR-0031). All 3 clusters live-ratified + cold-rebuild-proven (129/129 + 73/73 + 69/69); chaos default-on on the sd smoke proves any-CN-serves-any-query from shared MinIO. ADRs 0028–0032 + 0037 |
 | [`nexus-infra-lakehouse`](https://github.com/grezap/nexus-infra-lakehouse) | 🟢 `v0.1.0` | Lakehouse tier (`08-spark`, 16 VMs) — **MinIO** distributed erasure-coded object store (round-robin DNS, no VIP) + **Apache Iceberg / Project Nessie** REST catalog ×2 on a dedicated **PostgreSQL HA pair** (keepalived VRRP VIP) + **Apache Spark** standalone **HA** (2 ZooKeeper-elected masters + 3 workers + 3-node ZooKeeper). End-to-end Spark→Iceberg→MinIO write path; all mTLS via Vault PKI; cold-rebuild-proven (ADRs 0033-0035) |
 | [`nexus-infra-registry`](https://github.com/grezap/nexus-infra-registry) | 🟢 `v0.1.0` | Registry tier (`09-platform`, 4 VMs + VIP) — **highly-available Harbor**: 2 stateless app nodes (round-robin DNS) + dedicated PostgreSQL/Redis master-replica HA datastore (VRRP VIP); **image blobs in MinIO S3**; Trivy scanning + cosign signing; **Vault OIDC SSO** → AD. Live-ratified + cold-rebuild-proven (41/41; 7 transients fixed in source; ADR-0036) |
+| [`nexus-infra-vitess`](https://github.com/grezap/nexus-infra-vitess) | 🟢 `v0.1.0` | Vitess-sharded MySQL tier (`07-vitess`, 12 VMs) — the **relational (MySQL) sharding** showcase (distinct from PXC/Galera *replication*). 3-node etcd topo + vtctld/VTOrc control + 2 vtgate routers (RR DNS, MySQL `:15306`) + 2 shards × 3 Percona Server 8.4 tablets; keyspace `commerce`, hash vindex; Vitess v24.0.1; full Vault-PKI mTLS. Live-ratified + cold-rebuild-proven (`smoke-0.O.ps1` 71/71; VTOrc auto-reparent + 53/47 shard split proven; ADR-0041) |
 | [`nexus-cli`](https://github.com/grezap/nexus-cli) | 🟢 `v0.5.0` | .NET 10 Native AOT CLI — **all 5 of 5 master-plan verbs live** (`cluster-status` · `infrastructure` · `failover-test` · `demo` · `kafka failover`). 22.75 MB single binary under the 25 MB gate |
 | `portfolio` *(coming soon)* | ⚪ planned | Blazor Server portfolio website — the site that lists everything else |
 | `dataflow-studio` *(coming soon)* | ⚪ planned | SQL Server CDC → Kafka → StarRocks + ClickHouse data platform |
@@ -128,7 +140,7 @@ complete project grid with live status.
 ```
 ●  .NET 10 / C# 13 · ASP.NET Core · Blazor Server · gRPC · Native AOT
 ●  Kafka (KRaft, Streams, ksqlDB, Debezium, MirrorMaker 2) · Schema Registry
-●  SQL Server Always On · Percona MySQL PXC · PostgreSQL Patroni · MongoDB RS
+●  SQL Server Always On · Percona MySQL PXC · PostgreSQL Patroni · MongoDB RS · Vitess (MySQL sharding)
 ●  StarRocks · ClickHouse · Redis Cluster · Kimball modelling · SCD2
 ●  ML.NET · ONNX · PyTorch→ONNX · Semantic Kernel · Ollama · HuggingFace
 ●  Docker Swarm · HashiCorp Nomad · Consul · Vault · Kubernetes · Terraform · Packer
