@@ -45,11 +45,14 @@ complete project grid with live status.
 > rebuild-proven end-to-end via per-engine Packer templates + per-cluster Terraform
 > states) are all live. The .NET 10 Native AOT operator CLI (`nexus-cli`) ships
 > **all 5 of 5 master-plan verbs** as of `v0.5.0` — Phase 0.F closed; live RTOs
-> all under master-plan budgets. **`v0.6.0` (2026-06-05) opens the data-tier
-> adapter expansion: the `IClusterAdapter` SPI + the first concrete adapter,
-> Redis, live-verified end-to-end against the running cluster (all 11 data-tier
-> verbs green — status/health/topology/failover/cert-rotate/acl/backup/scale-out/
-> chaos; 23.77 MB under the new ≤30 MB gate). The 9 remaining adapters follow.** **0.G.3.5 architectural refactor** (per-cluster
+> all under master-plan budgets. **`v0.6.1` (2026-06-05) — the data-tier
+> adapter expansion: 2 of 11 adapters live-verified end-to-end. Redis (v0.6.0,
+> mTLS-only) + Mongo (v0.6.1, the first password-auth adapter, on `nexus-rs`)
+> ship all data-tier verbs green — status/health/topology/failover (Mongo
+> `rs.stepDown` RTO≈2.8s)/cert-rotate/acl/backup/scale-out/chaos. Mongo adds the
+> Vault-KV operator-credential model (the `nexus-cluster-admin` password lives
+> only in Vault KV, fetched at runtime via an optional `INexusVaultClient`); 23.9
+> MB under the ≤30 MB gate. 8 adapters follow.** **0.G.3.5 architectural refactor** (per-cluster
 > Terraform state + per-engine Packer template — the rule born from 0.G.3's
 > 16-transient stall) canonized; shrinks per-cluster iteration from ~30 min
 > monolithic → ~5-10 min. **0.G.4 (Patroni PG 17 HA + etcd 3.5 DCS + HAProxy 3
@@ -148,7 +151,7 @@ complete project grid with live status.
 | [`nexus-infra-registry`](https://github.com/grezap/nexus-infra-registry) | 🟢 `v0.1.0` | Registry tier (`09-platform`, 4 VMs + VIP) — **highly-available Harbor**: 2 stateless app nodes (round-robin DNS) + dedicated PostgreSQL/Redis master-replica HA datastore (VRRP VIP); **image blobs in MinIO S3**; Trivy scanning + cosign signing; **Vault OIDC SSO** → AD. Live-ratified + cold-rebuild-proven (41/41; 7 transients fixed in source; ADR-0036) |
 | [`nexus-infra-vitess`](https://github.com/grezap/nexus-infra-vitess) | 🟢 `v0.1.0` | Vitess-sharded MySQL tier (`07-vitess`, 12 VMs) — the **relational (MySQL) sharding** showcase (distinct from PXC/Galera *replication*). 3-node etcd topo + vtctld/VTOrc control + 2 vtgate routers (RR DNS, MySQL `:15306`) + 2 shards × 3 Percona Server 8.4 tablets; keyspace `commerce`, hash vindex; Vitess v24.0.1; full Vault-PKI mTLS. Live-ratified + cold-rebuild-proven (`smoke-0.O.ps1` 71/71; VTOrc auto-reparent + 53/47 shard split proven; ADR-0041) |
 | [`nexus-infra-citus`](https://github.com/grezap/nexus-infra-citus) | 🟢 `v0.1.0` | Citus-sharded PostgreSQL tier (`08-citus`, 9 VMs + 3 VRRP VIPs) — the **relational (PostgreSQL) sharding** showcase with **full Patroni HA** (distinct from Patroni *streaming replication*). 3-node etcd DCS + coordinator Patroni pair + 2 worker Patroni pairs; PostgreSQL 17 + Citus 14.x; distributed (32-shard) + reference + colocated tables; every node-group fronted by a keepalived VRRP VIP that follows the Patroni leader (workers in `pg_dist_node` by VIP); full Vault-PKI mTLS. Live-ratified + cold-rebuild-proven (`smoke-0.P.ps1` 69/69 incl worker Patroni failover; ADR-0042) |
-| [`nexus-cli`](https://github.com/grezap/nexus-cli) | 🟢 `v0.6.0` | .NET 10 Native AOT CLI — Phase 0.F verbs (`cluster-status` · `infrastructure` · `failover-test` · `demo` · `kafka failover`) **plus the Phase 0.G `IClusterAdapter` data-tier expansion**: the **Redis adapter** ships live-verified (11 verbs: status/health/topology/failover/cert-rotate/acl/backup/scale-out/chaos). 23.77 MB single binary under the ≤30 MB gate (ADR-0024); 9 adapters to go |
+| [`nexus-cli`](https://github.com/grezap/nexus-cli) | 🟢 `v0.6.1` | .NET 10 Native AOT CLI — Phase 0.F verbs (`cluster-status` · `infrastructure` · `failover-test` · `demo` · `kafka failover`) **plus the Phase 0.G `IClusterAdapter` data-tier expansion**: the **Redis adapter** (v0.6.0, mTLS-only) + the **Mongo adapter** (v0.6.1, the first password-auth adapter — Vault-KV operator-credential model via an optional `INexusVaultClient`) both ship live-verified (all verbs: status/health/topology/failover/cert-rotate/acl/backup/scale-out/chaos). 23.9 MB single binary under the ≤30 MB gate (ADR-0024); 2 of 11 adapters live, 8 to go |
 | `portfolio` *(coming soon)* | ⚪ planned | Blazor Server portfolio website — the site that lists everything else |
 | `dataflow-studio` *(coming soon)* | ⚪ planned | SQL Server CDC → Kafka → StarRocks + ClickHouse data platform |
 | `nexus-platform` *(coming soon)* | ⚪ planned | Microservices reference — gRPC + Kafka + REST, sagas, K8s-ready |
