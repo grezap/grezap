@@ -45,20 +45,21 @@ complete project grid with live status.
 > rebuild-proven end-to-end via per-engine Packer templates + per-cluster Terraform
 > states) are all live. The .NET 10 Native AOT operator CLI (`nexus-cli`) ships
 > **all 5 of 5 master-plan verbs** as of `v0.5.0` — Phase 0.F closed; live RTOs
-> all under master-plan budgets. **`v0.6.4` (2026-06-11) — the data-tier
-> adapter expansion: 5 of 11 adapters live-verified end-to-end. Redis (v0.6.0,
+> all under master-plan budgets. **`v0.6.5` (2026-06-12) — the data-tier
+> adapter expansion: 6 of 11 adapters live-verified end-to-end. Redis (v0.6.0,
 > mTLS-only) + Mongo (v0.6.1, password-auth) + Percona XtraDB Cluster + ProxySQL
 > (v0.6.2, Galera synchronous multi-primary) + PostgreSQL Patroni HA (v0.6.3,
 > streaming replication + etcd DCS + HAProxy VIP) + ClickHouse (v0.6.4, the first
 > **sharded** + **analytics-tier** engine — 3 shards × 2 replicas over a ClickHouse
-> Keeper RAFT quorum) ship all data-tier verbs green — status/health/topology
-> (ClickHouse `topology` populates Shards)/failover (ClickHouse **Keeper RAFT leader
-> re-election** RTO≈1.1s, the fastest of the tier; Patroni `patronictl switchover`
-> RTO≈4.6s)/cert-rotate (9 nodes)/acl/backup (native `BACKUP/RESTORE` to the
-> shared-NFS Disk)/scale-out/chaos. The Vault-KV operator-credential model
+> Keeper RAFT quorum) + StarRocks (v0.6.5, the second analytics-tier engine — an MPP
+> MySQL-protocol warehouse: 3 FE BDB-JE metadata quorum + 3 BE tablet nodes) ship all
+> data-tier verbs green — status/health/topology/failover (StarRocks **FE leader
+> re-election** RTO≈1.5s; ClickHouse Keeper re-election RTO≈1.1s)/cert-rotate (6
+> nodes)/acl/backup (StarRocks genuine async `BACKUP/RESTORE SNAPSHOT` to the file://
+> NFS repo)/scale-out/chaos. The Vault-KV operator-credential model
 > (the `nexus-cluster-admin` password lives only in Vault KV, fetched at runtime
 > via an optional `INexusVaultClient`) carries across every password-auth adapter;
-> 24.84 MB under the ≤30 MB gate. 6 adapters follow.** **0.G.3.5 architectural refactor** (per-cluster
+> 25.03 MB under the ≤30 MB gate. 5 adapters follow.** **0.G.3.5 architectural refactor** (per-cluster
 > Terraform state + per-engine Packer template — the rule born from 0.G.3's
 > 16-transient stall) canonized; shrinks per-cluster iteration from ~30 min
 > monolithic → ~5-10 min. **0.G.4 (Patroni PG 17 HA + etcd 3.5 DCS + HAProxy 3
